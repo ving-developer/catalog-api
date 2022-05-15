@@ -1,4 +1,14 @@
+using Catalog_API.Context;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+//getting the connection string from appsettings.json
+var mySqlConnection = builder.Configuration.GetConnectionString("DefaultConection");
+//Configuring the DbContext to use the Entity Framework and be used for dependency injection
+builder.Services.AddDbContext<CatalogApiContext>(options =>
+                        options.UseMySql(mySqlConnection,
+                        ServerVersion.AutoDetect(mySqlConnection)));
+
 
 // Add services to the container.
 
