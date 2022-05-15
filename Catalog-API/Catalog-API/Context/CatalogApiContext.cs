@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Catalog_API.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Catalog_API.Context
 {
@@ -9,5 +10,9 @@ namespace Catalog_API.Context
     public class CatalogApiContext : DbContext
     {
         public CatalogApiContext(DbContextOptions<CatalogApiContext> options) : base(options) { }
+
+        public DbSet<Category> Categories { get; set; }
+
+        public DbSet<Product> Products { get; set; }
     }
 }
