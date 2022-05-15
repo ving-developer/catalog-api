@@ -1,5 +1,6 @@
 ﻿using Catalog_API.Models;
 using Catalog_API.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog_API.Controllers;
@@ -15,12 +16,14 @@ public class ProductsController : Controller
         _unity = unity;
     }
 
+    [Authorize]
     [HttpGet("price")]
     public ActionResult<IEnumerable<Product>> ListProductsByPrice()
     {
         return _unity.ProductRepository.ListProductsByPrice().ToList();
     }
 
+    [Authorize]
     [HttpGet]
     public ActionResult<IEnumerable<Product>> Get()
     {
@@ -32,6 +35,7 @@ public class ProductsController : Controller
         return products;
     }
 
+    [Authorize]
     [HttpGet("{id:int}", Name = "GetProduct")]//Specifies that this route will receive an id attribute of type integer and adds an internal name for this route. In this example this route name is being used in the CreatedAtRouteResult method
     public ActionResult<Product> Get(int id)
     {
@@ -42,7 +46,8 @@ public class ProductsController : Controller
         }
         return product;
     }
-    
+
+    [Authorize]
     [HttpPost]
     public IActionResult Post(Product product)//IActionResult in the return type means that this method will only return ActionResult, that is, responses with status codes and without objects in the Request Body
     {
@@ -56,6 +61,7 @@ public class ProductsController : Controller
          * to query the created object*/
     }
 
+    [Authorize]
     [HttpPut("{id:int}")]
     public ActionResult<Product> Put(int id, Product product)
     {
@@ -66,6 +72,7 @@ public class ProductsController : Controller
         return Ok(product);
     }
 
+    [Authorize]
     [HttpDelete("{id:int}")]
     public ActionResult<Product> Delete(int id)
     {

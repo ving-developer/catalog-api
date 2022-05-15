@@ -1,5 +1,6 @@
 ﻿using Catalog_API.Models;
 using Catalog_API.Repository.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Catalog_API.Controllers;
@@ -15,6 +16,7 @@ public class CategoriesController : Controller
         _unity = unity;
     }
 
+    [Authorize]
     [HttpGet("products")]
     public ActionResult<IEnumerable<Category>> GetCategoriesProducts()
     {
@@ -26,6 +28,7 @@ public class CategoriesController : Controller
         return NotFound();
     }
 
+    [Authorize]
     [HttpGet]
     public ActionResult<IEnumerable<Category>> Get()
     {
@@ -38,6 +41,7 @@ public class CategoriesController : Controller
         return categories;
     }
 
+    [Authorize]
     [HttpGet("{id:int}", Name = "GetCategoryById")]
     public ActionResult<Category> Get(int id)
     {
@@ -49,6 +53,7 @@ public class CategoriesController : Controller
         return Ok(category);
     }
 
+    [Authorize]
     [HttpPost]
     public ActionResult Post(Category category)
     {
@@ -63,6 +68,7 @@ public class CategoriesController : Controller
          * name of the route that will be called to query the created category*/
     }
 
+    [Authorize]
     [HttpPut("{id:int}")]
     public ActionResult Put(int id, Category category)
     {
@@ -76,6 +82,7 @@ public class CategoriesController : Controller
         return Ok(category);
     }
 
+    [Authorize]
     [HttpDelete("{id:int}")]
     public ActionResult Delete(int id)
     {
