@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Catalog_API.DTOs;
 using Catalog_API.Models;
+using Catalog_API.Pagination;
 using Catalog_API.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Catalog_API.Controllers;
 
@@ -35,11 +37,21 @@ public class ProductsController : Controller
 
     [Authorize]
     [HttpGet]
-    public ActionResult<IEnumerable<ProductDTO>> Get()
+    public ActionResult<IEnumerable<ProductDTO>> Get([FromQuery] ProductParameters parameters)
     {
-        var products = _unity.ProductRepository.Get().Take(10).ToList();// The Take() method will define a limit of products to be searched
+        var products = _unity.ProductRepository.GetProducts(parameters);
         if (products is not null)
         {
+            var metadata = new
+            {
+                products.TotalCount,
+                products.PageSize,
+                products.CurrentPage,
+                products.TotalPages,
+                products.HasNext,
+                products.HasPrevious
+            };
+            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
             var productDTO = _mapper.Map<List<ProductDTO>>(products);
             return productDTO;
         }
@@ -67,7 +79,7 @@ public class ProductsController : Controller
         _unity.ProductRepository.Add(product);
         _unity.Commit();
         productDTO = _mapper.Map<ProductDTO>(product);
-        return CreatedAtRoute("GetProduct", new { id = productDTO.ProductId}, productDTO);
+        return CreatedAtRoute("GetProduct", new { id = productDTO.ProductId }, productDTO);
         /* This method returns the code 201 (created result) and also adds a "location" field
          * in the response header, with the URI used to query the created object (good practices of REST).
          * The "GetProduct" parameter corresponds to the name of the route that will be called
