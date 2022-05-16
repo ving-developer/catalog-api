@@ -1,4 +1,6 @@
-﻿using Catalog_API.Models;
+﻿using AutoMapper;
+using Catalog_API.DTOs;
+using Catalog_API.Models;
 using Catalog_API.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -10,51 +12,62 @@ namespace Catalog_API.Controllers;
 public class ProductsController : Controller
 {
     private readonly IUnityOfWork _unity;
+    private readonly IMapper _mapper;
 
-    public ProductsController(IUnityOfWork unity)
+    public ProductsController(IUnityOfWork unity, IMapper mapper)
     {
         _unity = unity;
+        _mapper = mapper;
     }
 
     [Authorize]
     [HttpGet("price")]
-    public ActionResult<IEnumerable<Product>> ListProductsByPrice()
+    public ActionResult<IEnumerable<ProductDTO>> ListProductsByPrice()
     {
-        return _unity.ProductRepository.ListProductsByPrice().ToList();
+        var products = _unity.ProductRepository.ListProductsByPrice().ToList();
+        if (products is not null)
+        {
+            var productsDTO = _mapper.Map<List<ProductDTO>>(products);
+            return productsDTO;
+        }
+        return NotFound();
     }
 
     [Authorize]
     [HttpGet]
-    public ActionResult<IEnumerable<Product>> Get()
+    public ActionResult<IEnumerable<ProductDTO>> Get()
     {
         var products = _unity.ProductRepository.Get().Take(10).ToList();// The Take() method will define a limit of products to be searched
-        if (products is null)
+        if (products is not null)
         {
-            return NotFound();
+            var productDTO = _mapper.Map<List<ProductDTO>>(products);
+            return productDTO;
         }
-        return products;
+        return NotFound();
     }
 
     [Authorize]
     [HttpGet("{id:int}", Name = "GetProduct")]//Specifies that this route will receive an id attribute of type integer and adds an internal name for this route. In this example this route name is being used in the CreatedAtRouteResult method
-    public ActionResult<Product> Get(int id)
+    public ActionResult<ProductDTO> Get(int id)
     {
         var product = _unity.ProductRepository.GetById(p => p.ProductId == id);
         if (product is null)
         {
             return NotFound();
         }
-        return product;
+        var productDTO = _mapper.Map<ProductDTO>(product);
+        return productDTO;
     }
 
     [Authorize]
     [HttpPost]
-    public IActionResult Post(Product product)//IActionResult in the return type means that this method will only return ActionResult, that is, responses with status codes and without objects in the Request Body
+    public IActionResult Post(ProductDTO productDTO)//IActionResult in the return type means that this method will only return ActionResult, that is, responses with status codes and without objects in the Request Body
     {
+        var product = _mapper.Map<Product>(productDTO);
         _unity.ProductRepository.Add(product);
         _unity.Commit();
-
-        return CreatedAtRoute("GetProduct", new { id = product.ProductId}, product);
+        productDTO = _mapper.Map<ProductDTO>(product);
+        return CreatedAtRoute("GetProduct", new { id = productDTO.ProductId}, productDTO);
         /* This method returns the code 201 (created result) and also adds a "location" field
          * in the response header, with the URI used to query the created object (good practices of REST).
          * The "GetProduct" parameter corresponds to the name of the route that will be called
@@ -63,18 +76,19 @@ public class ProductsController : Controller
 
     [Authorize]
     [HttpPut("{id:int}")]
-    public ActionResult<Product> Put(int id, Product product)
+    public ActionResult<ProductDTO> Put(int id, ProductDTO productDTO)
     {
-        if (id != product.ProductId) return BadRequest();
+        if (id != productDTO.ProductId) return BadRequest();
 
+        var product = _mapper.Map<Product>(productDTO);
         _unity.ProductRepository.Update(product);
         _unity.Commit();
-        return Ok(product);
+        return productDTO;
     }
 
     [Authorize]
     [HttpDelete("{id:int}")]
-    public ActionResult<Product> Delete(int id)
+    public ActionResult<ProductDTO> Delete(int id)
     {
         var product = _unity.ProductRepository.GetById(p => p.ProductId == id);
         if (product is null)
@@ -83,6 +97,7 @@ public class ProductsController : Controller
         }
         _unity.ProductRepository.Delete(product);
         _unity.Commit();
-        return Ok(product);
+        var productDTO = _mapper.Map<ProductDTO>(product);
+        return productDTO;
     }
 }
