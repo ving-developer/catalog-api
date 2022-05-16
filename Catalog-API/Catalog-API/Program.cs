@@ -1,10 +1,13 @@
 using Catalog_API.AppServiceExtensions;
 using Catalog_API.Context;
+using Catalog_API.Logging;
 using Catalog_API.Repository;
 using Catalog_API.Repository.Interfaces;
 using Catalog_API.Services;
 using Catalog_API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +33,12 @@ builder.AddSwaggerApi()
 
 //Injects our pattern UnitOfWork which will be in charge of accessing the Repositories and persisting the information in the database
 builder.Services.AddScoped<IUnityOfWork, UnityOfWork>();
+
+//Adding our custom logs globally to the application
+builder.Services.TryAddEnumerable(
+           ServiceDescriptor.Singleton<ILoggerProvider, CustomLoggerProvider>());
+LoggerProviderOptions.RegisterProviderOptions
+    <CustomLoggerProviderConfiguration, CustomLoggerProvider>(builder.Services);
 #endregion
 
 var app = builder.Build();
