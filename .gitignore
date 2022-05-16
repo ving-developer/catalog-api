@@ -283,3 +283,4 @@ obj/
 # End of https://www.toptal.com/developers/gitignore/api/dotnetcore,aspnetcore
 
 Catalog-API/Catalog-API/appsettings.Development.json
+Catalog-API/log.txt
