@@ -1,5 +1,7 @@
+using AutoMapper;
 using Catalog_API.AppServiceExtensions;
 using Catalog_API.Context;
+using Catalog_API.DTOs.Mappings;
 using Catalog_API.Logging;
 using Catalog_API.Repository;
 using Catalog_API.Repository.Interfaces;
@@ -33,6 +35,14 @@ builder.AddSwaggerApi()
 
 //Injects our pattern UnitOfWork which will be in charge of accessing the Repositories and persisting the information in the database
 builder.Services.AddScoped<IUnityOfWork, UnityOfWork>();
+
+//Create MapperConfiguration using MappingProfile to convert DTO objects in Models and vice versa
+var mappingConfig = new MapperConfiguration(mc =>
+{
+    mc.AddProfile(new MappingProfile());
+});
+//Adding mapper as singleton
+builder.Services.AddSingleton(mappingConfig.CreateMapper());
 
 //Adding our custom logs globally to the application
 builder.Services.TryAddEnumerable(
