@@ -1,5 +1,6 @@
 ﻿using Catalog_API.Context;
 using Catalog_API.Models;
+using Catalog_API.Pagination;
 using Catalog_API.Repository.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,5 +17,11 @@ public class CategoryRepository: Repository<Category>, ICategoryRepository
          * categories. The "Take(2)" method used in Products, specifies a
          * limit of products related to the categories to be searched.*/
         return Get().Include(x => x.Products.Take(2));
+    }
+
+    public PagedList<Category> GetCategories(CategoryParameters parameters)
+    {
+        return PagedList<Category>.ToPagedList(Get().OrderBy(c => c.CategoryId),
+            parameters.PageNumber, parameters.PageSize);
     }
 }
