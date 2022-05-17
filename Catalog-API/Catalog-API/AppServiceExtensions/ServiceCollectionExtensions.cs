@@ -25,7 +25,7 @@ namespace Catalog_API.AppServiceExtensions
                 c.IncludeXmlComments(xmlPath, includeControllerXmlComments: true);
 
                 //Configuring Authorization
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "ApiCatalogo", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "CatalogAPI", Version = "v1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Name = "Authorization",
