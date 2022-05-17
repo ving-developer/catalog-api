@@ -51,6 +51,10 @@ builder.Services.TryAddEnumerable(
            ServiceDescriptor.Singleton<ILoggerProvider, CustomLoggerProvider>());
 LoggerProviderOptions.RegisterProviderOptions
     <CustomLoggerProviderConfiguration, CustomLoggerProvider>(builder.Services);
+
+builder.Services.AddCors(opt => opt.AddPolicy("EnableApiGet", builder =>
+                                builder.WithOrigins("https://www.apirequest.io/")
+                                        .WithMethods("GET")));
 #endregion
 
 var app = builder.Build();
@@ -68,6 +72,8 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 
 app.UseAuthorization();
+
+app.UseCors();
 
 app.MapControllers();
 #endregion
