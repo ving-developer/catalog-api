@@ -2,6 +2,7 @@
 using Catalog_API.Models;
 using Catalog_API.Pagination;
 using Catalog_API.Repository.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Catalog_API.Repository;
 
@@ -12,9 +13,9 @@ public class ProductRepository : Repository<Product>, IProductRepository
     /**
      * Returns all products sorted by price
      */
-    public IEnumerable<Product> ListProductsByPrice()
+    public async Task<IEnumerable<Product>> ListProductsByPrice()
     {
-        return Get().OrderBy(c => c.Price).ToList();
+        return await Get().OrderBy(c => c.Price).ToListAsync();
     }
 
     public PagedList<Product> GetProducts(ProductParameters parameters)

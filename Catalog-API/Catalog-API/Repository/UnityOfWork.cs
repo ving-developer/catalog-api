@@ -27,9 +27,9 @@ namespace Catalog_API.Repository
         /**
          * Attempts to save all pending changes, if not, reverts all changes and returns an exception
          */
-        public void Commit()
+        public async Task CommitAsync()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         /**
