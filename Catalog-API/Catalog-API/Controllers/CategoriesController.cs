@@ -24,9 +24,9 @@ public class CategoriesController : Controller
 
     [Authorize]
     [HttpGet("products")]
-    public ActionResult<IEnumerable<CategoryDTO>> GetCategoriesProducts()
+    public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategoriesProductsAsync()
     {
-        var categories = _unity.CategoryRepository.GetCategoryProducts().ToList();
+        var categories = await _unity.CategoryRepository.GetCategoryProductsAsync();
         if (categories is not null)
         {
             //Mapping categories (a List<Category>) to a List<CategoryDTO>
@@ -38,7 +38,7 @@ public class CategoriesController : Controller
 
     [Authorize]
     [HttpGet]
-    public ActionResult<IEnumerable<CategoryDTO>> Get([FromQuery] CategoryParameters parameters)
+    public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetAsync([FromQuery] CategoryParameters parameters)
     {
         var categories = _unity.CategoryRepository.GetCategories(parameters);
         if (categories is null)
@@ -64,9 +64,9 @@ public class CategoriesController : Controller
 
     [Authorize]
     [HttpGet("{id:int}", Name = "GetCategoryById")]
-    public ActionResult<CategoryDTO> Get(int id)
+    public async Task<ActionResult<CategoryDTO>> GetByIdAsync(int id)
     {
-        var category = _unity.CategoryRepository.GetById(c => c.CategoryId == id);
+        var category = _unity.CategoryRepository.GetByIdAsync(c => c.CategoryId == id);
         if (category == null)
         {
             return NotFound();
@@ -78,11 +78,11 @@ public class CategoriesController : Controller
 
     [Authorize]
     [HttpPost]
-    public ActionResult<CategoryDTO> Post(CategoryDTO categoryDTO)
+    public async Task<ActionResult<CategoryDTO>> PostAsync(CategoryDTO categoryDTO)
     {
         var category = _mapper.Map<Category>(categoryDTO);
         _unity.CategoryRepository.Add(category);
-        _unity.Commit();
+        await _unity.CommitAsync();
         categoryDTO = _mapper.Map<CategoryDTO>(category);
         return new CreatedAtRouteResult("GetCategoryById",
             new { id = categoryDTO.CategoryId }, categoryDTO);
@@ -95,7 +95,7 @@ public class CategoriesController : Controller
 
     [Authorize]
     [HttpPut("{id:int}")]
-    public ActionResult<CategoryDTO> Put(int id, CategoryDTO categoryDTO)
+    public async Task<ActionResult<CategoryDTO>> PutAsync(int id, CategoryDTO categoryDTO)
     {
         if (id != categoryDTO.CategoryId)
         {
@@ -104,19 +104,19 @@ public class CategoriesController : Controller
 
         var category = _mapper.Map<Category>(categoryDTO);
         _unity.CategoryRepository.Update(category);
-        _unity.Commit();
+        await _unity.CommitAsync();
         return categoryDTO;
     }
 
     [Authorize]
     [HttpDelete("{id:int}")]
-    public ActionResult<CategoryDTO> Delete(int id)
+    public async Task<ActionResult<CategoryDTO>> DeleteAsync(int id)
     {
-        var categoria = _unity.CategoryRepository.GetById(c => c.CategoryId == id);
+        var categoria = await _unity.CategoryRepository.GetByIdAsync(c => c.CategoryId == id);
         if (categoria is not null)
         {
             _unity.CategoryRepository.Delete(categoria);
-            _unity.Commit();
+            await _unity.CommitAsync();
             var categoryDTO = _mapper.Map<CategoryDTO>(categoria);
             return categoryDTO;
         }

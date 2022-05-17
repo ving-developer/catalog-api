@@ -24,9 +24,9 @@ public class ProductsController : Controller
 
     [Authorize]
     [HttpGet("price")]
-    public ActionResult<IEnumerable<ProductDTO>> ListProductsByPrice()
+    public async Task<ActionResult<IEnumerable<ProductDTO>>> ListProductsByPriceAsync()
     {
-        var products = _unity.ProductRepository.ListProductsByPrice().ToList();
+        var products = _unity.ProductRepository.ListProductsByPriceAsync();
         if (products is not null)
         {
             var productsDTO = _mapper.Map<List<ProductDTO>>(products);
@@ -60,9 +60,9 @@ public class ProductsController : Controller
 
     [Authorize]
     [HttpGet("{id:int}", Name = "GetProduct")]//Specifies that this route will receive an id attribute of type integer and adds an internal name for this route. In this example this route name is being used in the CreatedAtRouteResult method
-    public ActionResult<ProductDTO> Get(int id)
+    public async Task<ActionResult<ProductDTO>> GetByIdAsync(int id)
     {
-        var product = _unity.ProductRepository.GetById(p => p.ProductId == id);
+        var product = await _unity.ProductRepository.GetByIdAsync(p => p.ProductId == id);
         if (product is null)
         {
             return NotFound();
@@ -73,11 +73,11 @@ public class ProductsController : Controller
 
     [Authorize]
     [HttpPost]
-    public IActionResult Post(ProductDTO productDTO)//IActionResult in the return type means that this method will only return ActionResult, that is, responses with status codes and without objects in the Request Body
+    public async Task<IActionResult> PostAsync(ProductDTO productDTO)//IActionResult in the return type means that this method will only return ActionResult, that is, responses with status codes and without objects in the Request Body
     {
         var product = _mapper.Map<Product>(productDTO);
         _unity.ProductRepository.Add(product);
-        _unity.Commit();
+        await _unity.CommitAsync();
         productDTO = _mapper.Map<ProductDTO>(product);
         return CreatedAtRoute("GetProduct", new { id = productDTO.ProductId }, productDTO);
         /* This method returns the code 201 (created result) and also adds a "location" field
@@ -88,27 +88,27 @@ public class ProductsController : Controller
 
     [Authorize]
     [HttpPut("{id:int}")]
-    public ActionResult<ProductDTO> Put(int id, ProductDTO productDTO)
+    public async Task<ActionResult<ProductDTO>> PutAsync(int id, ProductDTO productDTO)
     {
         if (id != productDTO.ProductId) return BadRequest();
 
         var product = _mapper.Map<Product>(productDTO);
         _unity.ProductRepository.Update(product);
-        _unity.Commit();
+        await _unity.CommitAsync();
         return productDTO;
     }
 
     [Authorize]
     [HttpDelete("{id:int}")]
-    public ActionResult<ProductDTO> Delete(int id)
+    public async Task<ActionResult<ProductDTO>> DeleteAsync(int id)
     {
-        var product = _unity.ProductRepository.GetById(p => p.ProductId == id);
+        var product = await _unity.ProductRepository.GetByIdAsync(p => p.ProductId == id);
         if (product is null)
         {
             return NotFound();
         }
         _unity.ProductRepository.Delete(product);
-        _unity.Commit();
+        await _unity.CommitAsync();
         var productDTO = _mapper.Map<ProductDTO>(product);
         return productDTO;
     }

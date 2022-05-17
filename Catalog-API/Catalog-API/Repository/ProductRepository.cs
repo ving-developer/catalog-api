@@ -13,7 +13,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
     /**
      * Returns all products sorted by price
      */
-    public async Task<IEnumerable<Product>> ListProductsByPrice()
+    public async Task<IEnumerable<Product>> ListProductsByPriceAsync()
     {
         return await Get().OrderBy(c => c.Price).ToListAsync();
     }
