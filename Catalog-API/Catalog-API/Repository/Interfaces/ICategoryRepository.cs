@@ -7,5 +7,5 @@ public interface ICategoryRepository : IRepository<Category>
 {
     Task<IEnumerable<Category>> GetCategoryProductsAsync();
 
-    PagedList<Category> GetCategories(CategoryParameters parameters);
+    Task<PagedList<Category>> GetCategoriesAsync(CategoryParameters parameters);
 }

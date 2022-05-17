@@ -7,5 +7,5 @@ public interface IProductRepository: IRepository<Product>
 {
     Task<IEnumerable<Product>> ListProductsByPriceAsync();
 
-    PagedList<Product> GetProducts(ProductParameters parameters);
+    Task<PagedList<Product>> GetProductsAsync(ProductParameters parameters);
 }

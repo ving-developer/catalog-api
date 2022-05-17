@@ -40,7 +40,7 @@ public class CategoriesController : Controller
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetAsync([FromQuery] CategoryParameters parameters)
     {
-        var categories = _unity.CategoryRepository.GetCategories(parameters);
+        var categories = await _unity.CategoryRepository.GetCategoriesAsync(parameters);
         if (categories is null)
         {
             return NotFound();
@@ -66,7 +66,7 @@ public class CategoriesController : Controller
     [HttpGet("{id:int}", Name = "GetCategoryById")]
     public async Task<ActionResult<CategoryDTO>> GetByIdAsync(int id)
     {
-        var category = _unity.CategoryRepository.GetByIdAsync(c => c.CategoryId == id);
+        var category = await _unity.CategoryRepository.GetByIdAsync(c => c.CategoryId == id);
         if (category == null)
         {
             return NotFound();

@@ -26,7 +26,7 @@ public class ProductsController : Controller
     [HttpGet("price")]
     public async Task<ActionResult<IEnumerable<ProductDTO>>> ListProductsByPriceAsync()
     {
-        var products = _unity.ProductRepository.ListProductsByPriceAsync();
+        var products = await _unity.ProductRepository.ListProductsByPriceAsync();
         if (products is not null)
         {
             var productsDTO = _mapper.Map<List<ProductDTO>>(products);
@@ -37,9 +37,9 @@ public class ProductsController : Controller
 
     [Authorize]
     [HttpGet]
-    public ActionResult<IEnumerable<ProductDTO>> Get([FromQuery] ProductParameters parameters)
+    public async Task<ActionResult<IEnumerable<ProductDTO>>> Get([FromQuery] ProductParameters parameters)
     {
-        var products = _unity.ProductRepository.GetProducts(parameters);
+        var products = await _unity.ProductRepository.GetProductsAsync(parameters);
         if (products is not null)
         {
             var metadata = new

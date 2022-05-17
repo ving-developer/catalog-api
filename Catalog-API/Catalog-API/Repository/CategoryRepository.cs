@@ -19,9 +19,9 @@ public class CategoryRepository: Repository<Category>, ICategoryRepository
         return await Get().Include(x => x.Products.Take(2)).ToListAsync();
     }
 
-    public PagedList<Category> GetCategories(CategoryParameters parameters)
+    public async Task<PagedList<Category>> GetCategoriesAsync(CategoryParameters parameters)
     {
-        return PagedList<Category>.ToPagedList(Get().OrderBy(c => c.CategoryId),
+        return await PagedList<Category>.ToPagedListAsync(Get().OrderBy(c => c.CategoryId),
             parameters.PageNumber, parameters.PageSize);
     }
 }

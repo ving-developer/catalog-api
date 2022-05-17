@@ -18,9 +18,9 @@ public class ProductRepository : Repository<Product>, IProductRepository
         return await Get().OrderBy(c => c.Price).ToListAsync();
     }
 
-    public PagedList<Product> GetProducts(ProductParameters parameters)
+    public async Task<PagedList<Product>> GetProductsAsync(ProductParameters parameters)
     {
-        return PagedList<Product>.ToPagedList(Get().OrderBy(p => p.ProductId),
+        return await PagedList<Product>.ToPagedListAsync(Get().OrderBy(p => p.ProductId),
             parameters.PageNumber,parameters.PageSize);
     }
 }
