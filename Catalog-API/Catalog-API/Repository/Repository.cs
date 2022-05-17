@@ -24,10 +24,10 @@ public class Repository<T> : IRepository<T> where T : class
          * done in methods that will not update this data in the database (perfect for GET verbs)*/
     }
 
-    public T GetById(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
+    public async Task<T> GetByIdAsync(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
     {
         //Set<T> of _context returns a DbSet<T> instance to access entities of the received generic T type
-        return _context.Set<T>().AsNoTracking().SingleOrDefault(predicate);
+        return await _context.Set<T>().AsNoTracking().SingleOrDefaultAsync(predicate);
     }
 
     public void Add(T entity)
