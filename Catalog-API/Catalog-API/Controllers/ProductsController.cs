@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace Catalog_API.Controllers;
 
+[Authorize]//Adds authentication required in all endpoints off this controller
 [ApiController]// Configure attribute routing requirement, ModelState validation, ModelBinding parameter inference (automatically adding [FromBody] to POST methods) and Automatic HTTP 400 responses.
 [Route("[controller]")]//Sets controller route
 public class ProductsController : Controller
@@ -22,7 +23,6 @@ public class ProductsController : Controller
         _mapper = mapper;
     }
 
-    [Authorize]
     [HttpGet("price")]
     public async Task<ActionResult<IEnumerable<ProductDTO>>> ListProductsByPriceAsync()
     {
@@ -35,7 +35,6 @@ public class ProductsController : Controller
         return NotFound();
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProductDTO>>> Get([FromQuery] ProductParameters parameters)
     {
@@ -58,7 +57,6 @@ public class ProductsController : Controller
         return NotFound();
     }
 
-    [Authorize]
     [HttpGet("{id:int}", Name = "GetProduct")]//Specifies that this route will receive an id attribute of type integer and adds an internal name for this route. In this example this route name is being used in the CreatedAtRouteResult method
     public async Task<ActionResult<ProductDTO>> GetByIdAsync(int id)
     {
@@ -71,7 +69,6 @@ public class ProductsController : Controller
         return productDTO;
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<IActionResult> PostAsync(ProductDTO productDTO)//IActionResult in the return type means that this method will only return ActionResult, that is, responses with status codes and without objects in the Request Body
     {
@@ -86,7 +83,6 @@ public class ProductsController : Controller
          * to query the created object*/
     }
 
-    [Authorize]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<ProductDTO>> PutAsync(int id, ProductDTO productDTO)
     {
@@ -98,7 +94,6 @@ public class ProductsController : Controller
         return productDTO;
     }
 
-    [Authorize]
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<ProductDTO>> DeleteAsync(int id)
     {

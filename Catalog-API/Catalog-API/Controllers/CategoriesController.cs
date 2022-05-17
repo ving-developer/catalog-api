@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace Catalog_API.Controllers;
 
+[Authorize]//Adds authentication required in all endpoints off this controller
 [ApiController]// Configure attribute routing requirement, ModelState validation, ModelBinding parameter inference (automatically adding [FromBody] to POST methods) and Automatic HTTP 400 responses.
 [Route("[controller]")]//Sets controller route
 public class CategoriesController : Controller
@@ -22,7 +23,6 @@ public class CategoriesController : Controller
         _mapper = mapper;
     }
 
-    [Authorize]
     [HttpGet("products")]
     public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategoriesProductsAsync()
     {
@@ -36,7 +36,6 @@ public class CategoriesController : Controller
         return NotFound();
     }
 
-    [Authorize]
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetAsync([FromQuery] CategoryParameters parameters)
     {
@@ -62,7 +61,6 @@ public class CategoriesController : Controller
         return categoriesDTO;
     }
 
-    [Authorize]
     [HttpGet("{id:int}", Name = "GetCategoryById")]
     public async Task<ActionResult<CategoryDTO>> GetByIdAsync(int id)
     {
@@ -76,7 +74,6 @@ public class CategoriesController : Controller
         return categoryDTO;
     }
 
-    [Authorize]
     [HttpPost]
     public async Task<ActionResult<CategoryDTO>> PostAsync(CategoryDTO categoryDTO)
     {
@@ -93,7 +90,6 @@ public class CategoriesController : Controller
          * name of the route that will be called to query the created category*/
     }
 
-    [Authorize]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CategoryDTO>> PutAsync(int id, CategoryDTO categoryDTO)
     {
@@ -108,7 +104,6 @@ public class CategoriesController : Controller
         return categoryDTO;
     }
 
-    [Authorize]
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<CategoryDTO>> DeleteAsync(int id)
     {
