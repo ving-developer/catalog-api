@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
-namespace Catalog_API.Controllers;
+namespace Catalog_API.Controllers.V1;
 
 [Authorize]//Adds authentication required in all endpoints off this controller
 [ApiController]// Configure attribute routing requirement, ModelState validation, ModelBinding parameter inference (automatically adding [FromBody] to POST methods) and Automatic HTTP 400 responses.
-[Route("[controller]")]//Sets controller route
+[Route("api/v{v:apiVersion}/[controller]")]//Sets controller route
+[ApiVersion("1.0")]//maps the API version to this Controller's endpoints
+[ApiVersion("2.0")]//maps the API version to this Controller's endpoints
 public class CategoriesController : Controller
 {
     private readonly IUnityOfWork _unity;

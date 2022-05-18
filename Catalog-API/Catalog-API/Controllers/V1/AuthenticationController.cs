@@ -3,13 +3,14 @@ using Catalog_API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Catalog_API.Controllers;
+namespace Catalog_API.Controllers.V1;
 
 /// <summary>
 /// Authentication manager
 /// </summary>
+[ApiVersion("1.0",Deprecated = true)]//maps the API version to this Controller's endpoints
 [ApiController]// Configure attribute routing requirement, ModelState validation, ModelBinding parameter inference (automatically adding [FromBody] to POST methods) and Automatic HTTP 400 responses.
-[Route("[controller]")]//Sets controller route
+[Route("api/v{v:apiVersion}/[controller]")]//Sets controller route
 public class AuthenticationController : Controller
 {
     private readonly IConfiguration _configuration;

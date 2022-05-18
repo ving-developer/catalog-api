@@ -7,6 +7,7 @@ using Catalog_API.Repository;
 using Catalog_API.Repository.Interfaces;
 using Catalog_API.Services;
 using Catalog_API.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging.Configuration;
@@ -55,6 +56,18 @@ LoggerProviderOptions.RegisterProviderOptions
 builder.Services.AddCors(opt => opt.AddPolicy("EnableApiGet", builder =>
                                 builder.WithOrigins("https://www.apirequest.io/")
                                         .WithMethods("GET")));
+//Add versioning
+builder.Services.AddApiVersioning(opt =>
+{
+    opt.AssumeDefaultVersionWhenUnspecified = true;//tells the application to use the default API version when a version is not specified in the request
+    opt.DefaultApiVersion = new Microsoft.AspNetCore.Mvc.ApiVersion(1,0);//Informs the default API version
+    opt.ReportApiVersions = true;//Informs in the Response of the request, information about the compatibility of the version used by the request
+});
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    options.GroupNameFormat = "'v'VVV";//Informs Swagger of the versioning pattern used in the endpoint url
+    options.SubstituteApiVersionInUrl = true;
+});
 #endregion
 
 var app = builder.Build();
@@ -62,8 +75,7 @@ var app = builder.Build();
 #region Configure HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerApi(app.Services.GetRequiredService<IApiVersionDescriptionProvider>());
 }
 
 app.UseHttpsRedirection();
