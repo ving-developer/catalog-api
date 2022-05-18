@@ -6,14 +6,21 @@ using Catalog_API.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Mime;
 
 namespace Catalog_API.Controllers.V1;
 
+/// <summary>
+/// Categories CRUD
+/// </summary>
 [Authorize]//Adds authentication required in all endpoints off this controller
 [ApiController]// Configure attribute routing requirement, ModelState validation, ModelBinding parameter inference (automatically adding [FromBody] to POST methods) and Automatic HTTP 400 responses.
 [Route("api/v{v:apiVersion}/[controller]")]//Sets controller route
 [ApiVersion("1.0")]//maps the API version to this Controller's endpoints
 [ApiVersion("2.0")]//maps the API version to this Controller's endpoints
+[ApiConventionType(typeof(DefaultApiConventions))]//Automatically apply the possible return types and status codes based on REST conventions for each HTPP method, for all Controller actions
+[Produces(MediaTypeNames.Application.Json)]//Informs that this controller only returns json as a result
+[Consumes(MediaTypeNames.Application.Json)]//Informs that this controller only accepts json in its requests
 public class CategoriesController : Controller
 {
     private readonly IUnityOfWork _unity;
@@ -25,6 +32,10 @@ public class CategoriesController : Controller
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Get all the categories and the first products of each of them
+    /// </summary>
+    /// <returns>All categories and their first products</returns>
     [HttpGet("products")]
     public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetCategoriesProductsAsync()
     {
@@ -38,6 +49,21 @@ public class CategoriesController : Controller
         return NotFound();
     }
 
+    /// <summary>
+    /// Receives PageNumber and PageSize parameters, fetching paginated categories
+    /// </summary>
+    /// <remarks>
+    /// PageNumber
+    ///
+    ///         1
+    ///         
+    /// PageSize
+    /// 
+    ///         5
+    /// </remarks>
+    /// 
+    /// <param name="parameters">PageNumber and PageSize</param>
+    /// <returns>Paginated categories</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<CategoryDTO>>> GetAsync([FromQuery] CategoryParameters parameters)
     {
@@ -63,6 +89,16 @@ public class CategoriesController : Controller
         return categoriesDTO;
     }
 
+    /// <summary>
+    /// Searches for a category by its Id and returns it
+    /// </summary>
+    /// <remarks>
+    /// id
+    ///
+    ///         1
+    /// </remarks>
+    /// <param name="id">Id of searched Category</param>
+    /// <returns>Category</returns>
     [HttpGet("{id:int}", Name = "GetCategoryById")]
     public async Task<ActionResult<CategoryDTO>> GetByIdAsync(int id)
     {
@@ -76,6 +112,22 @@ public class CategoriesController : Controller
         return categoryDTO;
     }
 
+    /// <summary>
+    /// Register a new category
+    /// </summary>
+    /// <remarks>
+    /// Request body example:
+    ///
+    ///     POST /Categories
+    ///     {
+    ///         "categoryId": 0,
+    ///         "name": "Same category",
+    ///         "imageUrl": "category.jpg"
+    ///     }
+    ///
+    /// </remarks>
+    /// <param name="categoryDTO">Category to be registered</param>
+    /// <returns>Created Category</returns>
     [HttpPost]
     public async Task<ActionResult<CategoryDTO>> PostAsync(CategoryDTO categoryDTO)
     {
@@ -92,6 +144,22 @@ public class CategoriesController : Controller
          * name of the route that will be called to query the created category*/
     }
 
+    /// <summary>
+    /// Update an existing category
+    /// </summary>
+    /// <remarks>
+    /// Request body example:
+    ///
+    ///     PUT /Categories/{id}
+    ///     {
+    ///         "categoryId": 0,
+    ///         "name": "Updated Category",
+    ///         "imageUrl": "category.jpg"
+    ///     }
+    ///
+    /// </remarks>
+    /// <param name="categoryDTO">Category to be updated</param>
+    /// <returns>Updated Category</returns>
     [HttpPut("{id:int}")]
     public async Task<ActionResult<CategoryDTO>> PutAsync(int id, CategoryDTO categoryDTO)
     {
@@ -106,6 +174,16 @@ public class CategoriesController : Controller
         return categoryDTO;
     }
 
+    /// <summary>
+    /// Delete an existing category
+    /// </summary>
+    /// <remarks>
+    /// Id:
+    ///
+    ///     1
+    /// </remarks>
+    /// <param name="id">Category id to be deleted</param>
+    /// <returns>Deleted Category</returns>
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<CategoryDTO>> DeleteAsync(int id)
     {

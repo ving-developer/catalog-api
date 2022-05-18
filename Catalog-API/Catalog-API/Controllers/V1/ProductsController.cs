@@ -7,15 +7,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System.Net.Mime;
 
 namespace Catalog_API.Controllers.V1;
 
+/// <summary>
+/// Products CRUD
+/// </summary>
 [EnableCors("EnableApiGet")]//Adds EnableApiGet pollicy defined in Program.cs in all methods of controller
 [Authorize]//Adds authentication required in all endpoints off this controller
 [ApiController]// Configure attribute routing requirement, ModelState validation, ModelBinding parameter inference (automatically adding [FromBody] to POST methods) and Automatic HTTP 400 responses.
 [Route("api/v{v:apiVersion}/[controller]")]//Sets controller route
 [ApiVersion("1.0")]//maps the API version to this Controller's endpoints
 [ApiVersion("2.0")]//maps the API version to this Controller's endpoints
+[ApiConventionType(typeof(DefaultApiConventions))]//Automatically apply the possible return types and status codes based on REST conventions for each HTPP method, for all Controller actions
+[Produces(MediaTypeNames.Application.Json)]//Informs that this controller only returns json as a result
+[Consumes(MediaTypeNames.Application.Json)]//Informs that this controller only accepts json in its requests
 public class ProductsController : Controller
 {
     private readonly IUnityOfWork _unity;
@@ -27,6 +34,10 @@ public class ProductsController : Controller
         _mapper = mapper;
     }
 
+    /// <summary>
+    /// Get all products ordered by price
+    /// </summary>
+    /// <returns>All products ordered by price</returns>
     [HttpGet("price")]
     public async Task<ActionResult<IEnumerable<ProductDTO>>> ListProductsByPriceAsync()
     {
@@ -39,6 +50,21 @@ public class ProductsController : Controller
         return NotFound();
     }
 
+    /// <summary>
+    /// Receives PageNumber and PageSize parameters, fetching paginated products
+    /// </summary>
+    /// <remarks>
+    /// PageNumber
+    ///
+    ///         1
+    ///         
+    /// PageSize
+    /// 
+    ///         5
+    /// </remarks>
+    /// 
+    /// <param name="parameters">PageNumber and PageSize</param>
+    /// <returns>Paginated products</returns>
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ProductDTO>>> Get([FromQuery] ProductParameters parameters)
     {
@@ -61,6 +87,16 @@ public class ProductsController : Controller
         return NotFound();
     }
 
+    /// <summary>
+    /// Searches for a product by its Id and returns it
+    /// </summary>
+    /// <remarks>
+    /// id
+    ///
+    ///         1
+    /// </remarks>
+    /// <param name="id">Id of searched Product</param>
+    /// <returns>Product</returns>
     [HttpGet("{id:int}", Name = "GetProduct")]//Specifies that this route will receive an id attribute of type integer and adds an internal name for this route. In this example this route name is being used in the CreatedAtRouteResult method
     public async Task<ActionResult<ProductDTO>> GetByIdAsync(int id)
     {
@@ -73,6 +109,25 @@ public class ProductsController : Controller
         return productDTO;
     }
 
+    /// <summary>
+    /// Register a new product
+    /// </summary>
+    /// <remarks>
+    /// Request body example:
+    ///
+    ///     POST /Products
+    ///     {
+    ///         "productId": 0,
+    ///         "name": "string",
+    ///         "description": "string",
+    ///         "price": 0,
+    ///         "imageUrl": "string",
+    ///         "categoryId": 0
+    ///     }
+    ///
+    /// </remarks>
+    /// <param name="productDTO">Product to be registered</param>
+    /// <returns>Product Created</returns>
     [HttpPost]
     public async Task<IActionResult> PostAsync(ProductDTO productDTO)//IActionResult in the return type means that this method will only return ActionResult, that is, responses with status codes and without objects in the Request Body
     {
@@ -87,6 +142,23 @@ public class ProductsController : Controller
          * to query the created object*/
     }
 
+    /// <summary>
+    /// Update an existing product
+    /// </summary>
+    /// <remarks>
+    /// Request body example:
+    ///
+    ///     {
+    ///         "productId": 0,
+    ///         "name": "string",
+    ///         "description": "string",
+    ///         "price": 0,
+    ///         "imageUrl": "string",
+    ///         "categoryId": 0
+    ///     }
+    /// </remarks>
+    /// <param name="productDTO">Product to be updated</param>
+    /// <returns>Updated Product</returns>
     [HttpPut("{id:int}")]
     public async Task<ActionResult<ProductDTO>> PutAsync(int id, ProductDTO productDTO)
     {
@@ -98,6 +170,16 @@ public class ProductsController : Controller
         return productDTO;
     }
 
+    /// <summary>
+    /// Delete an existing product
+    /// </summary>
+    /// <remarks>
+    /// Id:
+    ///
+    ///     1
+    /// </remarks>
+    /// <param name="id">product id to be deleted</param>
+    /// <returns>Deleted Product</returns>
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<ProductDTO>> DeleteAsync(int id)
     {
