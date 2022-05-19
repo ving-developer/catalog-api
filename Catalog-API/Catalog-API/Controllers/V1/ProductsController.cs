@@ -23,7 +23,7 @@ namespace Catalog_API.Controllers.V1;
 [ApiConventionType(typeof(DefaultApiConventions))]//Automatically apply the possible return types and status codes based on REST conventions for each HTPP method, for all Controller actions
 [Produces(MediaTypeNames.Application.Json)]//Informs that this controller only returns json as a result
 [Consumes(MediaTypeNames.Application.Json)]//Informs that this controller only accepts json in its requests
-public class ProductsController : Controller
+public class ProductsController : ControllerBase
 {
     private readonly IUnityOfWork _unity;
     private readonly IMapper _mapper;
@@ -66,7 +66,7 @@ public class ProductsController : Controller
     /// <param name="parameters">PageNumber and PageSize</param>
     /// <returns>Paginated products</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ProductDTO>>> Get([FromQuery] ProductParameters parameters)
+    public async Task<ActionResult<IEnumerable<ProductDTO>>> GetAsync([FromQuery] ProductParameters parameters)
     {
         var products = await _unity.ProductRepository.GetProductsAsync(parameters);
         if (products is not null)
@@ -80,7 +80,7 @@ public class ProductsController : Controller
                 products.HasNext,
                 products.HasPrevious
             };
-            Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+            Response?.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
             var productDTO = _mapper.Map<List<ProductDTO>>(products);
             return productDTO;
         }
@@ -167,7 +167,7 @@ public class ProductsController : Controller
         var product = _mapper.Map<Product>(productDTO);
         _unity.ProductRepository.Update(product);
         await _unity.CommitAsync();
-        return productDTO;
+        return NoContent();
     }
 
     /// <summary>
@@ -191,6 +191,6 @@ public class ProductsController : Controller
         _unity.ProductRepository.Delete(product);
         await _unity.CommitAsync();
         var productDTO = _mapper.Map<ProductDTO>(product);
-        return productDTO;
+        return Ok(productDTO);
     }
 }

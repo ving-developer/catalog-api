@@ -21,7 +21,7 @@ namespace Catalog_API.Controllers.V1;
 [ApiConventionType(typeof(DefaultApiConventions))]//Automatically apply the possible return types and status codes based on REST conventions for each HTPP method, for all Controller actions
 [Produces(MediaTypeNames.Application.Json)]//Informs that this controller only returns json as a result
 [Consumes(MediaTypeNames.Application.Json)]//Informs that this controller only accepts json in its requests
-public class CategoriesController : Controller
+public class CategoriesController : ControllerBase
 {
     private readonly IUnityOfWork _unity;
     private readonly IMapper _mapper;
@@ -83,7 +83,7 @@ public class CategoriesController : Controller
             categories.HasPrevious
         };
 
-        Response.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
+        Response?.Headers.Add("X-Pagination", JsonConvert.SerializeObject(metadata));
 
         var categoriesDTO = _mapper.Map<List<CategoryDTO>>(categories);
         return categoriesDTO;
@@ -171,7 +171,7 @@ public class CategoriesController : Controller
         var category = _mapper.Map<Category>(categoryDTO);
         _unity.CategoryRepository.Update(category);
         await _unity.CommitAsync();
-        return categoryDTO;
+        return NoContent();
     }
 
     /// <summary>
@@ -193,7 +193,7 @@ public class CategoriesController : Controller
             _unity.CategoryRepository.Delete(categoria);
             await _unity.CommitAsync();
             var categoryDTO = _mapper.Map<CategoryDTO>(categoria);
-            return categoryDTO;
+            return Ok(categoryDTO);
         }
 
         return NotFound();
