@@ -4,6 +4,7 @@ using Catalog_API.Models;
 using Catalog_API.Pagination;
 using Catalog_API.Repository.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Net.Mime;
@@ -13,6 +14,7 @@ namespace Catalog_API.Controllers.V1;
 /// <summary>
 /// Categories CRUD
 /// </summary>
+[EnableCors("EnableApiGet")]//Adds EnableApiGet pollicy defined in Program.cs in all methods of controller
 [Authorize]//Adds authentication required in all endpoints off this controller
 [ApiController]// Configure attribute routing requirement, ModelState validation, ModelBinding parameter inference (automatically adding [FromBody] to POST methods) and Automatic HTTP 400 responses.
 [Route("api/v{v:apiVersion}/[controller]")]//Sets controller route

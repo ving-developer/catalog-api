@@ -1,6 +1,7 @@
 ﻿using Catalog_API.Models;
 using Catalog_API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Mime;
 
@@ -9,6 +10,7 @@ namespace Catalog_API.Controllers.V1;
 /// <summary>
 /// Authentication manager
 /// </summary>
+[EnableCors("EnableApiGet")]//Adds EnableApiGet pollicy defined in Program.cs in all methods of controller
 [ApiVersion("1.0",Deprecated = true)]//maps the API version to this Controller's endpoints
 [ApiController]// Configure attribute routing requirement, ModelState validation, ModelBinding parameter inference (automatically adding [FromBody] to POST methods) and Automatic HTTP 400 responses.
 [Route("api/v{v:apiVersion}/[controller]")]//Sets controller route

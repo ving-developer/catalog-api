@@ -54,8 +54,9 @@ LoggerProviderOptions.RegisterProviderOptions
     <CustomLoggerProviderConfiguration, CustomLoggerProvider>(builder.Services);
 
 builder.Services.AddCors(opt => opt.AddPolicy("EnableApiGet", builder =>
-                                builder.WithOrigins("https://www.apirequest.io/")
-                                        .WithMethods("GET")));
+                                builder.AllowAnyOrigin()
+                                       .AllowAnyHeader()
+                                       .AllowAnyMethod()));
 //Add versioning
 builder.Services.AddApiVersioning(opt =>
 {
@@ -80,12 +81,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
 //Use in "app" the authentication method added in "builder"
 app.UseAuthentication();
 
 app.UseAuthorization();
-
-app.UseCors();
 
 app.MapControllers();
 #endregion
